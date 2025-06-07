@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verbos da Fé - Ouça Deus Falar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-purple-100 to-white min-h-screen flex flex-col justify-between font-sans">
+
+  <header class="text-center py-16 px-6">
+    <h1 class="text-4xl font-extrabold text-purple-800 mb-4">💬 Deus Quer Falar com Você</h1>
+    <p class="text-lg text-gray-700 max-w-xl mx-auto">Escreva como você está se sentindo agora. Uma inteligência divina responderá como se fosse o próprio Deus.</p>
+  </header>
+
+  <main class="flex-1 px-6">
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+      <form id="formMensagem" class="flex flex-col gap-4">
+        <label for="sentimento" class="text-lg font-medium text-gray-800">O que você quer que Deus saiba?</label>
+        <input id="sentimento" type="text" required placeholder="Ex: Estou com medo do futuro..." class="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        <button type="submit" class="bg-purple-700 text-white font-semibold py-3 rounded-lg hover:bg-purple-800 transition">Ouvir Deus Falar Agora</button>
+      </form>
+      <div id="resposta" class="mt-6 p-4 bg-purple-50 border-l-4 border-purple-400 text-gray-800 rounded-lg hidden">
+        <p class="text-lg font-medium mb-2">Mensagem de Deus para você:</p>
+        <div id="mensagemTexto" class="italic whitespace-pre-wrap"></div>
+      </div>
+      <div id="carregando" class="mt-6 text-center text-purple-700 hidden">⏳ Gerando mensagem divina... aguarde...</div>
+    </div>
+  </main>
+
+  <footer class="text-center text-sm text-gray-500 py-6">
+    © 2025 Verbos da Fé – Todos os direitos reservados
+  </footer>
+
+  <script>
+    const form = document.getElementById("formMensagem");
+    const input = document.getElementById("sentimento");
+    const respostaDiv = document.getElementById("resposta");
+    const mensagemTexto = document.getElementById("mensagemTexto");
+    const carregando = document.getElementById("carregando");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const textoUsuario = input.value.trim();
+      if (!textoUsuario) return;
+
+      carregando.classList.remove("hidden");
+      respostaDiv.classList.add("hidden");
+
+      try {
+        const res = await fetch("http://localhost:3000/mensagem", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ textoUsuario })
+        });
+
+        const data = await res.json();
+        mensagemTexto.textContent = data.resposta || "Não foi possível receber a mensagem divina.";
+        respostaDiv.classList.remove("hidden");
+      } catch (err) {
+        mensagemTexto.textContent = "Erro ao conectar com os céus. Tente novamente.";
+        respostaDiv.classList.remove("hidden");
+      } finally {
+        carregando.classList.add("hidden");
+      }
+    });
+  </script>
+
+</body>
+</html>
